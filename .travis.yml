@@ -4,8 +4,7 @@ language: c
 jobs:
   - name: linux
     os: linux
-    script:
-    - true
+    script: bash -c "echo 'testing'"
     before_deploy:
     - ./build.bash
     deploy:
