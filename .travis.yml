@@ -20,4 +20,4 @@ jobs:
       name: $TRAVIS_TAG
       on:
         tags: true
-        repo: holochain/n3h
+        repo: holochain/node-static-build
