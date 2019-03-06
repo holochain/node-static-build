@@ -10,7 +10,7 @@ NODE_SRC_FILE=${NODE_SRC}.tar.gz
 NODE_SRC_URL=https://nodejs.org/dist/latest-v8.x/$NODE_SRC_FILE
 NODE_SRC_HASH=413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
 ARCH=$(uname -m)
-BUILD_NUM=alpha3
+BUILD_NUM=alpha4
 
 # -- resolve symlinks in path -- #
 SOURCE="${BASH_SOURCE[0]}"
@@ -48,9 +48,9 @@ PLATFORM=$(./$NODE_SRC/build/usr/bin/node -e "console.log(require('os').platform
 
 OUTPUT=$NODE_SRC-$PLATFORM-$ARCH-$BUILD_NUM
 cp $NODE_SRC/build/usr/bin/node ../$OUTPUT
-sha256sum ../$OUTPUT > ../$OUTPUT.sha256
+(cd .. && sha256sum $OUTPUT > $OUTPUT.sha256)
 NPM_OUTPUT=npm-$NODE_SRC-$BUILD_NUM.tar.xz
 (cd $NODE_SRC/build/usr/lib/node_modules && tar -cJf ../../../../../../$NPM_OUTPUT npm)
-sha256sum ../$NPM_OUTPUT > ../$NPM_OUTPUT.sha256
+(cd .. && sha256sum $NPM_OUTPUT > $NPM_OUTPUT.sha256)
 
 echo "done."
