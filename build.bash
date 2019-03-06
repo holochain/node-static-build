@@ -10,7 +10,7 @@ NODE_SRC_FILE=${NODE_SRC}.tar.gz
 NODE_SRC_URL=https://nodejs.org/dist/latest-v8.x/$NODE_SRC_FILE
 NODE_SRC_HASH=413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
 ARCH=$(uname -m)
-BUILD_NUM=alpha1
+BUILD_NUM=alpha2
 
 # -- resolve symlinks in path -- #
 SOURCE="${BASH_SOURCE[0]}"
