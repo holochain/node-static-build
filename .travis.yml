@@ -1,9 +1,11 @@
 dist: trusty
-language: bash
+language: c
 
 jobs:
   - name: linux
     os: linux
+    script:
+    - true
     before_deploy:
     - ./build.bash
     deploy:
