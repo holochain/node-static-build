@@ -3,11 +3,11 @@ language: bash
 script: bash -c "echo 'only building deploy release on tags'"
 os: linux
 before_deploy:
-- ./build.bash
-deploy:
+- "./build.bash"
+deploy-2:
   provider: releases
   api_key:
-    secure: xZGYRJ5E4BnUgRBDIkqeNqDSyUdvZAOJHqey73ZpHfs834kKhJ3x5MMmHdvP0bXA+OVUu+fnIfuuNH158hc7Mo0BPkJN4nkOcl0wjNUpqfg2ujAfcbAehtkz1cpv8AZRNSrL1xrtchOEY7jnuGyv+O05uROxTxvtT3TsGql1Qc62M+MglZtz2bALMbFrTMfxqcXH32h431OIXKZORkQUXgsFvbXg0J2ghzDLMknTlDZF2W2/Xds77FTPe9B7gNiNRvL9y5bU/Y03k1efIcfdMNSL8upGhpPhgDiipPjGFUmyarfcXvd6v2HQNrPTAHXoXHReIqAapNUqU5bWMQ9Kd+f5BAfybKIce6q+m4JvcoritCUJBP9uV9+7oA8rek0Cvykfc1MGFWHSy5Wv1iheUh9T3i/hlrqSZqad0LYw7tHQg1JLbFQOaqlIBmy8fYFsV3k9L1222u9EdWzHTO5kpHOHXeXRaeKrHCMycVWcVINXfKXrMIWO4sxAY71IRBTLQJUFPUUTjcSgkWB0yHZFyli8qEJmVvZikcylz89eVY2iTJepddKnsnSWPOQP1ZA1JRLP0QjhcWMfHPrrMWm2WUfBNebIkmPQylidWkvPBHca4HM7DTYuV9BbOZiR8prQ58v7zEVTxxr9ODFeFcjRcYaFpa+nQKRzSUdvsO1zUpU=
+    secure: f2eIgNLXBbMXwNP6lpjbEn4sXYj5wDmOQyKwriEyaBARwxXsGgqb12zGnz2FGa6692dkR+QcR/NAmISCWNOAyR90gdiNESMWYbjSeyuAMHwD31yy2kLvzvt21VxknPtZarEu51tYFsRF4MVpCLj/REJ1ZDSahfQRg3RPohpxj/H5L6dIwCimg7LbhIqOLcyHuDq3ialBmDbD0I6J4O9xmfvXWGxOmn8wlp0Zu6KK/3EL2ouKSK264c2dPfHs2mR3l1L05i+qq0yXjEIvnqnozQoORwffZgBBcXJyptb0IPx2y1DnQytR9ztc+P4dob+QTNFEZn24jLKWCp8YnzJfLkOUSQpD1ZGgWl/hOa3TILjDXh6rJRGxnEeRhEQK5y8fc+fYe0YNz8kN/5AtfF/G3VYDQipR2+1RFDERBe0Qk5d9JNf2gVMnQ+lYRZzgCUMmNph8SN4CiMmM7uMavhR6Q6mCDZACqU5Wjss+WTRs7lNXanCDyW+ZO+uRGkxFkIkWHkI2L64YalDweO8AiDdUUFUXZnNpw+DjZzflOgAY/xt+NzVpAWn51XdWHfUtKSRkfsh9iPqC6ttQuM7/iXCmPMp9N/qFKDir3U4cYr4+QAlMDvOUd5KQrYXWSS4MWNqBIoQnwMR8nkckyGKfHKGBcbdrkOclQ9HutHZ2chAKsbY=
   file_glob: true
   file:
   - dist/node*
@@ -15,7 +15,7 @@ deploy:
   skip_cleanup: true
   draft: true
   prerelease: true
-  name: $TRAVIS_TAG
+  name: "$TRAVIS_TAG"
   on:
     tags: true
     repo: holochain/node-static-build
