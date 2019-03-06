@@ -4,7 +4,7 @@ language: bash
 jobs:
   - name: linux
     os: linux
-    script:
+    before_deploy:
     - ./build.bash
     deploy:
       provider: releases
