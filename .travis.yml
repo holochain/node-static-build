@@ -1,9 +1,19 @@
 dist: trusty
 language: bash
-script: bash -c "echo 'only building deploy release on tags'"
 os: linux
-before_deploy:
-- "./build.bash"
+services: docker
+matrix:
+  include:
+  - name: linux-arm64
+    env: TOOLCHAIN=linux-arm64
+  - name: linux-armv7
+    env: TOOLCHAIN=linux-armv7
+  - name: linux-x64
+    env: TOOLCHAIN=linux-x64
+  - name: linux-x86
+    env: TOOLCHAIN=linux-x86
+if: tag IS present
+script: "TOOLCHAIN=${TOOLCHAIN} ./build.bash"
 deploy:
   provider: releases
   api_key:
