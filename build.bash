@@ -49,7 +49,7 @@ chmod a+x ./$TC_BIN
 # -- build node src -- #
 if [ ! -f $NODE_SRC/build/usr/bin/node ]; then
   tar xf $NODE_SRC_FILE
-  (cd $NODE_SRC && ../$TC_BIN bash -c "./configure --prefix=/usr --enable-static --partly-static" && ../$TC_BIN bash -c "make -j$(nproc)" && ../$TC_BIN bash -c "DESTDIR=build make install")
+  (cd $NODE_SRC && ../$TC_BIN bash -c "./configure --prefix=/usr --without-inspector --without-intl --enable-static --partly-static" && ../$TC_BIN bash -c "make -j$(nproc)" && ../$TC_BIN bash -c "DESTDIR=build make install")
 fi
 
 OUTPUT=$NODE_SRC-$TOOLCHAIN-$BUILD_NUM
