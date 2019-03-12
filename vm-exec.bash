@@ -42,6 +42,10 @@ VM_TAG="${VM_ARCH}-${VM_TAG}"
 VM_CMD="qemu-system-$VM_ARCH"
 VM_MACHINE="virt"
 VM_CPU="cortex-a57"
+VM_USER="${VM_USER:-node-static-build}"
+VM_IMAGE_DIR="${VM_IMAGE_DIR:-}"
+VM_INTERACTIVE="${VM_INTERACTIVE:-}"
+VM_IN_PLACE="${VM_IN_PLACE:-}"
 
 log "$VM_TAG $VM_CMD $VM_MACHINE $VM_CPU"
 
@@ -57,14 +61,21 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 MDIR=$DIR/machines-vm-exec
 mkdir -p $MDIR
 
-MADIR=$MDIR/$VM_TAG
+MADIR=$VM_IMAGE_DIR
+if [ "x$MADIR" == "x" ]; then
+  MADIR=$MDIR/$VM_TAG
+fi
 if [ ! -d $MADIR ]; then
   log "MACHINE IMG NOT FOUND $MADIR"
   exit 1
 fi
 
-log "copying image"
-cp -a $MADIR/* $TMPDIR/
+IMG_DIR=$MADIR
+if [ "x$VM_IN_PLACE" == "x" ]; then
+  IMG_DIR=$TMPDIR
+  log "copying image"
+  cp -a $MADIR/* $TMPDIR/
+fi
 
 cat > $TMPDIR/insecure-key <<'EOF'
 -----BEGIN RSA PRIVATE KEY-----
@@ -100,7 +111,7 @@ chmod 600 $TMPDIR/insecure-key
 cat > $TMPDIR/ssh_config <<EOF
 Host default
   Hostname 127.0.0.1
-  User vagrant
+  User $VM_USER
   Port 2222
   IdentityFile $TMPDIR/insecure-key
   UserKnownHostsFile /dev/null
@@ -111,12 +122,12 @@ EOF
 chmod 600 $TMPDIR/ssh_config
 
 VM_CMD="$VM_CMD -M $VM_MACHINE -cpu $VM_CPU -m 4G
-    -initrd $TMPDIR/initrd
-    -kernel $TMPDIR/linux
+    -initrd $IMG_DIR/initrd
+    -kernel $IMG_DIR/linux
     -append 'root=/dev/sda2 console=ttyAMA0'
     -global virtio-blk-device.scsi=off
     -device virtio-scsi-device,id=scsi
-    -drive file=$TMPDIR/machine.qcow2,id=rootimg,cache=unsafe,if=none
+    -drive file=$IMG_DIR/machine.qcow2,id=rootimg,cache=unsafe,if=none
     -device scsi-hd,drive=rootimg
     -device virtio-net-device,netdev=unet
     -netdev user,id=unet,hostfwd=tcp::2222-:22
@@ -124,13 +135,18 @@ VM_CMD="$VM_CMD -M $VM_MACHINE -cpu $VM_CPU -m 4G
     -monitor telnet::45454,server,nowait
     -serial mon:stdio"
 
+if [ "x$VM_INTERACTIVE" != "x" ]; then
+  eval $VM_CMD
+  exit 0
+fi
+
 log $VM_CMD
 eval $VM_CMD > $TMPDIR/log-vm-exec.log &
 PID="$$"
 
 log "vm booting ($PID), waiting for login"
 
-twait 60 grep -q "holochain-debian-arm64 login:" $TMPDIR/log-vm-exec.log
+twait 60 grep -q "node-static-build login:" $TMPDIR/log-vm-exec.log
 
 log "login found, attempting ssh"
 
@@ -172,6 +188,7 @@ echo ""
 echo "-- vm-exec command complete, power down --"
 echo ""
 nohup sudo poweroff &>/dev/null &
+exit 0
 EOF
 
 wait
