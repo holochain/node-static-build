@@ -15,6 +15,10 @@ apt-get install -y \
   automake \
   gnupg \
   file \
+  fuse \
+  libfuse-dev \
+  desktop-file-utils \
+  appstream \
   g++ \
   gcc \
   libbz2-dev \
