@@ -26,16 +26,12 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 cd $DIR
 
-DIST_DIR=./dist
-
 # -- setup build directory -- #
-mkdir -p $DIST_DIR
-cd $DIST_DIR
-BUILD_DIR=./build-$VM_ARCH
+BUILD_DIR=./dist/build-$VM_ARCH
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-log "Building $VM_ARCH into $DIST_DIR/$BUILD_DIR"
+log "Building $VM_ARCH into $BUILD_DIR"
 
 TC_BIN=""
 function exec_dockcross() {

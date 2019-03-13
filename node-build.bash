@@ -4,7 +4,7 @@
 set -Eeuo pipefail
 
 # -- variables -- #
-BUILD_NUM=alpha5
+BUILD_NUM=alpha6
 
 # TODO - update to node v10 after https://github.com/nodejs/node/issues/23440
 NODE_SRC=node-v8.15.1
@@ -16,7 +16,8 @@ function log() {
   echo "@node-build@ ${@}"
 }
 
-log "Building $NODE_SRC-$VM_ARCH-$BUILD_NUM..."
+ONAME=$NODE_SRC-linux-$VM_ARCH-$BUILD_NUM
+log "Building $ONAME..."
 
 OUT_DIR=./output
 mkdir -p $OUT_DIR
@@ -39,7 +40,6 @@ log "MAKE INSTALL"
 (cd $NODE_SRC && DESTDIR=build make install)
 
 log "PACKAGE"
-ONAME=$NODE_SRC-$VM_ARCH-$BUILD_NUM
 cp $NODE_SRC/build/usr/bin/node $OUT_DIR/$ONAME
 (cd $OUT_DIR && sha256sum $ONAME > $ONAME.sha256)
 NPM_OUTPUT=npm-$NODE_SRC-$BUILD_NUM.tar.xz
