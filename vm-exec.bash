@@ -66,8 +66,28 @@ if [ "x$MADIR" == "x" ]; then
   MADIR=$MDIR/$VM_TAG
 fi
 if [ ! -d $MADIR ]; then
-  log "MACHINE IMG NOT FOUND $MADIR"
-  exit 1
+  IMG_FILE=""
+  IMG_URL=""
+  IMG_HASH=""
+  case "${VM_TAG}" in
+    "aarch64-build")
+      IMG_FILE="vm-debian-aarch64-build.tar.xz"
+      IMG_URL="https://github.com/holochain/node-static-build/releases/download/deps-2019-03-12/vm-debian-aarch64-build.tar.xz"
+      IMG_HASH="742893ca971a61232ab9af0452cac40c965d7f4d0c0e4d3597c644388b0e664c"
+      ;;
+    *)
+      log "vm image ${VM_TAG} not yet supported"
+      exit 1
+      ;;
+  esac
+  mkdir -p $MADIR
+  (
+  cd $MADIR
+  curl -L -O $IMG_URL
+  echo "$IMG_HASH  $IMG_FILE" | sha256sum --check
+  tar xf $IMG_FILE
+  rm -f $IMG_FILE
+  )
 fi
 
 IMG_DIR=$MADIR

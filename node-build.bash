@@ -9,7 +9,7 @@ BUILD_NUM=alpha6
 # TODO - update to node v10 after https://github.com/nodejs/node/issues/23440
 NODE_SRC=node-v8.15.1
 NODE_SRC_FILE=${NODE_SRC}.tar.gz
-NODE_SRC_URL=https://nodejs.org/dist/latest-v8.x/$NODE_SRC_FILE
+NODE_SRC_URL=https://nodejs.org/dist/v8.15.1/$NODE_SRC_FILE
 NODE_SRC_HASH=413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
 
 function log() {
