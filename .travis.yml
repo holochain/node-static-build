@@ -1,17 +1,22 @@
 dist: trusty
 language: bash
-script: bash -c "echo 'only building deploy release on tags'"
 os: linux
-before_deploy:
-- "./build.bash"
+services: docker
+matrix:
+  include:
+  - name: linux-x64
+    env: VM_ARCH=x64
+  - name: linux-x86
+    env: VM_ARCH=x86
+if: tag IS present
+script: "VM_ARCH=${VM_ARCH} ./build.bash"
 deploy:
   provider: releases
   api_key:
     secure: f2eIgNLXBbMXwNP6lpjbEn4sXYj5wDmOQyKwriEyaBARwxXsGgqb12zGnz2FGa6692dkR+QcR/NAmISCWNOAyR90gdiNESMWYbjSeyuAMHwD31yy2kLvzvt21VxknPtZarEu51tYFsRF4MVpCLj/REJ1ZDSahfQRg3RPohpxj/H5L6dIwCimg7LbhIqOLcyHuDq3ialBmDbD0I6J4O9xmfvXWGxOmn8wlp0Zu6KK/3EL2ouKSK264c2dPfHs2mR3l1L05i+qq0yXjEIvnqnozQoORwffZgBBcXJyptb0IPx2y1DnQytR9ztc+P4dob+QTNFEZn24jLKWCp8YnzJfLkOUSQpD1ZGgWl/hOa3TILjDXh6rJRGxnEeRhEQK5y8fc+fYe0YNz8kN/5AtfF/G3VYDQipR2+1RFDERBe0Qk5d9JNf2gVMnQ+lYRZzgCUMmNph8SN4CiMmM7uMavhR6Q6mCDZACqU5Wjss+WTRs7lNXanCDyW+ZO+uRGkxFkIkWHkI2L64YalDweO8AiDdUUFUXZnNpw+DjZzflOgAY/xt+NzVpAWn51XdWHfUtKSRkfsh9iPqC6ttQuM7/iXCmPMp9N/qFKDir3U4cYr4+QAlMDvOUd5KQrYXWSS4MWNqBIoQnwMR8nkckyGKfHKGBcbdrkOclQ9HutHZ2chAKsbY=
   file_glob: true
   file:
-  - dist/node*
-  - dist/npm*
+  - dist/build-*/output/*
   skip_cleanup: true
   draft: true
   prerelease: true
