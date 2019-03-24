@@ -4,7 +4,7 @@
 set -Eeuo pipefail
 
 # -- variables -- #
-BUILD_NUM=alpha6
+BUILD_NUM=alpha7
 
 # TODO - update to node v10 after https://github.com/nodejs/node/issues/23440
 NODE_SRC=node-v8.15.1
@@ -16,12 +16,6 @@ function log() {
   echo "@node-build@ ${@}"
 }
 
-ONAME=$NODE_SRC-linux-$VM_ARCH-$BUILD_NUM
-log "Building $ONAME..."
-
-OUT_DIR=./output
-mkdir -p $OUT_DIR
-
 # -- download nodejs source -- #
 log "DOWNLOAD $NODE_SRC_URL"
 curl -L -O $NODE_SRC_URL
@@ -30,21 +24,35 @@ log "CHECKSUM GOOD"
 
 tar xf $NODE_SRC_FILE
 
-log "CONFIGURE"
-(cd $NODE_SRC && ./configure --prefix=/usr --enable-static --partly-static)
+OUT_DIR=./output
+mkdir -p $OUT_DIR
 
-log "MAKE"
-(cd $NODE_SRC && make -j$(nproc))
+function build_with_flags() {
+  local __name="$1"
+  local __flags="$2"
+  local __oname="${NODE_SRC}-linux-${VM_ARCH}-${__name}-${BUILD_NUM}"
 
-log "MAKE INSTALL"
-(cd $NODE_SRC && DESTDIR=build make install)
+  log "Building ${__oname}..."
 
-log "PACKAGE"
-cp $NODE_SRC/build/usr/bin/node $OUT_DIR/$ONAME
-(cd $OUT_DIR && sha256sum $ONAME > $ONAME.sha256)
-NPM_OUTPUT=npm-$NODE_SRC-$BUILD_NUM.tar.xz
-(cd $NODE_SRC/build/usr/lib/node_modules && tar -cJf ../../../../../$OUT_DIR/$NPM_OUTPUT npm)
-(cd $OUT_DIR && sha256sum $NPM_OUTPUT > $NPM_OUTPUT.sha256)
+  log "CONFIGURE-${__name}"
+  (cd $NODE_SRC && ./configure --prefix=/usr --enable-static ${__flags})
+
+  log "MAKE-${__name}"
+  (cd $NODE_SRC && make -j$(nproc))
+
+  log "MAKE INSTALL-${__name}"
+  (cd $NODE_SRC && DESTDIR="build-${__name}" make install)
+
+  log "PACKAGE-${__name}"
+  cp $NODE_SRC/build-${__name}/usr/bin/node $OUT_DIR/${__oname}
+  (cd $OUT_DIR && sha256sum ${__oname} > ${__oname}.sha256)
+  NPM_OUTPUT=npm-$NODE_SRC-$BUILD_NUM.tar.xz
+  (cd $NODE_SRC/build-${__name}/usr/lib/node_modules && tar -cJf ../../../../../$OUT_DIR/$NPM_OUTPUT npm)
+  (cd $OUT_DIR && sha256sum $NPM_OUTPUT > $NPM_OUTPUT.sha256)
+}
+
+build_with_flags "partly" "--partly-static"
+build_with_flags "fully" "--fully-static"
 
 log "BUNDLE"
 tar -cJf output.tar.xz $OUT_DIR
