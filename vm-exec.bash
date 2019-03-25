@@ -77,6 +77,11 @@ if [ ! -d $MADIR ]; then
       IMG_URL=""
       IMG_HASH=""
       ;;
+    "x86")
+      IMG_FILE=""
+      IMG_URL=""
+      IMG_HASH=""
+      ;;
     *)
       log "vm image ${VM_TAG} not yet supported"
       exit 1

@@ -3,17 +3,17 @@
     "user": "node-static-build",
     "password": "node-static-build",
     "disk_size": "10000",
-    "hostname": "node-static-build-x64",
-    "domain": "node-static-build-x64"
+    "hostname": "node-static-build-x86",
+    "domain": "node-static-build-x86"
   },
   "builders":
   [
     {
-      "name": "node-static-build-x64",
-      "vm_name": "node-static-build-x64.qcow2",
+      "name": "node-static-build-x86",
+      "vm_name": "node-static-build-x86.qcow2",
       "headless": true,
       "type": "qemu",
-      "qemu_binary": "qemu-system-x86_64",
+      "qemu_binary": "qemu-system-i386",
       "qemuargs": [[ "-m", "4096M" ],[ "-smp", "4" ]],
       "format": "qcow2",
       "accelerator": "kvm",
@@ -21,8 +21,8 @@
       "disk_cache": "none",
       "disk_interface": "ide",
       "disk_size": "{{ user `disk_size`}}",
-      "iso_url": "file://./packer_cache/debian-8.11.1-amd64-netinst.iso",
-      "iso_checksum": "ea444d6f8ac95fd51d2aedb8015c57410d1ad19b494cedec6914c17fda02733c",
+      "iso_url": "file://./packer_cache/debian-8.11.1-i386-netinst.iso",
+      "iso_checksum": "3741a984d170770f433ef694c823227298f7e8a2ff9c6486dc0b466ef9f8e710",
       "iso_checksum_type": "sha256",
       "http_directory": ".",
       "boot_wait": "5s",
@@ -52,7 +52,7 @@
       "type": "shell",
       "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
-        "_build-x64.bash"
+        "_build-x86.bash"
       ]
     }
   ],
@@ -60,8 +60,8 @@
     {
       "type": "shell-local",
       "inline": [
-        "OUT_DIR=output-node-static-build-x64",
-        "VM_NAME=$OUT_DIR/node-static-build-x64.qcow2",
+        "OUT_DIR=output-node-static-build-x86",
+        "VM_NAME=$OUT_DIR/node-static-build-x86.qcow2",
         "VM_NAME_OLD=$VM_NAME.old.qcow2",
         "mv $VM_NAME $VM_NAME_OLD",
         "qemu-img convert -c -O qcow2 $VM_NAME_OLD $VM_NAME",
