@@ -44,22 +44,6 @@ jobs:
       <<: *_docker_build
       env: TGT_ARCH=arm64
 
-    - name: "Node Compile Iter 1 x64"
-      <<: *_node_compile_iter
-      stage: "Node Compile 1"
-      env: TGT_ARCH=x64
-    - name: "Node Release x64"
-      <<: *_node_release
-      env: TGT_ARCH=x64
-
-    - name: "Node Compile Iter 1 ia32"
-      <<: *_node_compile_iter
-      stage: "Node Compile 1"
-      env: TGT_ARCH=ia32
-    - name: "Node Release ia32"
-      <<: *_node_release
-      env: TGT_ARCH=ia32
-
     - name: "Node Compile Iter 1 armv7l"
       <<: *_node_compile_iter
       stage: "Node Compile 1"
@@ -107,6 +91,22 @@ jobs:
     - name: "Node Release arm64"
       <<: *_node_release
       env: TGT_ARCH=arm64
+
+    - name: "Node Compile Iter 1 x64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=x64
+    - name: "Node Release x64"
+      <<: *_node_release
+      env: TGT_ARCH=x64
+
+    - name: "Node Compile Iter 1 ia32"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=ia32
+    - name: "Node Release ia32"
+      <<: *_node_release
+      env: TGT_ARCH=ia32
 
 deploy:
   provider: releases
