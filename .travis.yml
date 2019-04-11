@@ -7,22 +7,22 @@ addons:
     packages:
     - qemu-user-static
     - pxz
-matrix:
-  include:
-  - name: x64
-    env: TGT_ARCH=x64
-  - name: ia32
-    env: TGT_ARCH=x86
-  - name: armv7l
-    env: TGT_ARCH=armv7l
-  - name: arm64
-    env: TGT_ARCH=arm64
 if: tag IS present
 jobs:
   include:
     - stage: docker-build
+      env:
+        - TGT_ARCH=x64
+        - TGT_ARCH=ia32
+        - TGT_ARCH=armv7l
+        - TGT_ARCH=arm64
       script: "TGT_ARCH=$TGT_ARCH ./step1-build-docker-image.bash"
     - stage: node-compile
+      env:
+        - TGT_ARCH=x64
+        - TGT_ARCH=ia32
+        - TGT_ARCH=armv7l
+        - TGT_ARCH=arm64
       script: "TGT_ARCH=$TGT_ARCH ./step2-node-static-build.bash"
 deploy:
   provider: releases
