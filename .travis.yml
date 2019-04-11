@@ -2,30 +2,39 @@ dist: xenial
 language: bash
 os: linux
 services: docker
+if: tag IS present
+
 addons:
   apt:
     packages:
     - qemu-user-static
     - pxz
-if: tag IS present
+
+_docker_build: &_docker_build
+  stage: "Docker Build"
+  env: TGT_ARCH=x64
+  script: "./step1-build-docker-image.bash"
+
+_node_compile: &_node_compile
+  stage: "Node Compile"
+  env: TGT_ARCH=x64
+  script: "./step2-node-static-build.bash"
+
 jobs:
   include:
-    - stage: docker-build
-      env:
-        matrix:
-          - TGT_ARCH=x64
-          - TGT_ARCH=ia32
-          - TGT_ARCH=armv7l
-          - TGT_ARCH=arm64
-      script: "TGT_ARCH=$TGT_ARCH ./step1-build-docker-image.bash"
-    - stage: node-compile
-      env:
-        matrix:
-          - TGT_ARCH=x64
-          - TGT_ARCH=ia32
-          - TGT_ARCH=armv7l
-          - TGT_ARCH=arm64
-      script: "TGT_ARCH=$TGT_ARCH ./step2-node-static-build.bash"
+    - name: "Docker Build x64"
+      << _docker_build
+      env: TGT_ARCH=x64
+    - name: "Docker Build ia32"
+      << _docker_build
+      env: TGT_ARCH=ia32
+    - name: "Node Compile x64"
+      << _node_compile
+      env: TGT_ARCH=x64
+    - name: "Node Compile ia32"
+      << _node_compile
+      env: TGT_ARCH=ia32
+
 deploy:
   provider: releases
   api_key:
