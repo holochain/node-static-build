@@ -22,7 +22,7 @@ _docker_build: &_docker_build
 _node_compile_iter: &_node_compile_iter
   stage: "Node Compile"
   env: TGT_ARCH=x64
-  script: "CI_RUN_MIN=10 ./step2-node-static-build.bash"
+  script: "CI_RUN_MIN=40 ./step2-node-static-build.bash"
 
 _node_release: &_node_release
   stage: "Node Release"
@@ -48,17 +48,65 @@ jobs:
       <<: *_node_compile_iter
       stage: "Node Compile 1"
       env: TGT_ARCH=x64
-    - name: "Node Compile Iter 2 x64"
-      <<: *_node_compile_iter
-      stage: "Node Compile 2"
-      env: TGT_ARCH=x64
-    - name: "Node Compile Iter 3 x64"
-      <<: *_node_compile_iter
-      stage: "Node Compile 3"
-      env: TGT_ARCH=x64
     - name: "Node Release x64"
       <<: *_node_release
       env: TGT_ARCH=x64
+
+    - name: "Node Compile Iter 1 ia32"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=ia32
+    - name: "Node Release ia32"
+      <<: *_node_release
+      env: TGT_ARCH=ia32
+
+    - name: "Node Compile Iter 1 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 2 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 2"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 3 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 3"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 4 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 4"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 5 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=armv7l
+    - name: "Node Release armv7l"
+      <<: *_node_release
+      env: TGT_ARCH=armv7l
+
+    - name: "Node Compile Iter 1 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 2 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 2"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 3 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 3"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 4 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 4"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 5 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Release arm64"
+      <<: *_node_release
+      env: TGT_ARCH=arm64
 
 deploy:
   provider: releases
