@@ -12,17 +12,19 @@ jobs:
   include:
     - stage: docker-build
       env:
-        - TGT_ARCH=x64
-        - TGT_ARCH=ia32
-        - TGT_ARCH=armv7l
-        - TGT_ARCH=arm64
+        matrix:
+          - TGT_ARCH=x64
+          - TGT_ARCH=ia32
+          - TGT_ARCH=armv7l
+          - TGT_ARCH=arm64
       script: "TGT_ARCH=$TGT_ARCH ./step1-build-docker-image.bash"
     - stage: node-compile
       env:
-        - TGT_ARCH=x64
-        - TGT_ARCH=ia32
-        - TGT_ARCH=armv7l
-        - TGT_ARCH=arm64
+        matrix:
+          - TGT_ARCH=x64
+          - TGT_ARCH=ia32
+          - TGT_ARCH=armv7l
+          - TGT_ARCH=arm64
       script: "TGT_ARCH=$TGT_ARCH ./step2-node-static-build.bash"
 deploy:
   provider: releases
