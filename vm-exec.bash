@@ -36,18 +36,15 @@ function cleanup() {
 trap cleanup EXIT
 
 # -- variables -- #
-VM_ARCH="${VM_ARCH:-aarch64}"
+VM_ARCH="${VM_ARCH:-unset}"
 VM_TAG="${VM_TAG:-build}"
 VM_TAG="${VM_ARCH}-${VM_TAG}"
-VM_CMD="qemu-system-$VM_ARCH"
-VM_MACHINE="virt"
-VM_CPU="cortex-a57"
 VM_USER="${VM_USER:-node-static-build}"
 VM_IMAGE_DIR="${VM_IMAGE_DIR:-}"
 VM_INTERACTIVE="${VM_INTERACTIVE:-}"
 VM_IN_PLACE="${VM_IN_PLACE:-}"
 
-log "$VM_TAG $VM_CMD $VM_MACHINE $VM_CPU"
+log "$VM_TAG"
 
 # -- resolve symlinks in path -- #
 SOURCE="${BASH_SOURCE[0]}"
@@ -74,6 +71,16 @@ if [ ! -d $MADIR ]; then
       IMG_FILE="vm-debian-aarch64-build.tar.xz"
       IMG_URL="https://github.com/holochain/node-static-build/releases/download/deps-2019-03-12/vm-debian-aarch64-build.tar.xz"
       IMG_HASH="742893ca971a61232ab9af0452cac40c965d7f4d0c0e4d3597c644388b0e664c"
+      ;;
+    "x64")
+      IMG_FILE=""
+      IMG_URL=""
+      IMG_HASH=""
+      ;;
+    "x86")
+      IMG_FILE=""
+      IMG_URL=""
+      IMG_HASH=""
       ;;
     *)
       log "vm image ${VM_TAG} not yet supported"
@@ -141,32 +148,19 @@ Host default
 EOF
 chmod 600 $TMPDIR/ssh_config
 
-VM_CMD="$VM_CMD -M $VM_MACHINE -cpu $VM_CPU -m 4G
-    -initrd $IMG_DIR/initrd
-    -kernel $IMG_DIR/linux
-    -append 'root=/dev/sda2 console=ttyAMA0'
-    -global virtio-blk-device.scsi=off
-    -device virtio-scsi-device,id=scsi
-    -drive file=$IMG_DIR/machine.qcow2,id=rootimg,cache=unsafe,if=none
-    -device scsi-hd,drive=rootimg
-    -device virtio-net-device,netdev=unet
-    -netdev user,id=unet,hostfwd=tcp::2222-:22
-    -nographic
-    -monitor telnet::45454,server,nowait
-    -serial mon:stdio"
+source "$IMG_DIR/config.bash"
 
 if [ "x$VM_INTERACTIVE" != "x" ]; then
-  eval $VM_CMD
+  node-static-build-qemu-exec "$IMG_DIR"
   exit 0
 fi
 
-log $VM_CMD
-eval $VM_CMD > $TMPDIR/log-vm-exec.log &
+node-static-build-qemu-exec "$IMG_DIR" > $TMPDIR/log-vm-exec.log &
 PID="$$"
 
 log "vm booting ($PID), waiting for login"
 
-twait 60 grep -q "node-static-build login:" $TMPDIR/log-vm-exec.log
+twait 60 grep -q "#node-static-build#-BOOT-COMPLETE-#" $TMPDIR/log-vm-exec.log
 
 log "login found, attempting ssh"
 
