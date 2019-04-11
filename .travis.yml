@@ -10,13 +10,22 @@ addons:
     - qemu-user-static
     - pxz
 
+cache:
+  directories:
+    - build
+
 _docker_build: &_docker_build
   stage: "Docker Build"
   env: TGT_ARCH=x64
   script: "./step1-build-docker-image.bash"
 
-_node_compile: &_node_compile
+_node_compile_iter: &_node_compile_iter
   stage: "Node Compile"
+  env: TGT_ARCH=x64
+  script: "CI_RUN_MIN=10 ./step2-node-static-build.bash"
+
+_node_release: &_node_release
+  stage: "Node Release"
   env: TGT_ARCH=x64
   script: "./step2-node-static-build.bash"
 
@@ -28,12 +37,28 @@ jobs:
     - name: "Docker Build ia32"
       <<: *_docker_build
       env: TGT_ARCH=ia32
-    - name: "Node Compile x64"
-      <<: *_node_compile
+    - name: "Docker Build armv7l"
+      <<: *_docker_build
+      env: TGT_ARCH=armv7l
+    - name: "Docker Build arm64"
+      <<: *_docker_build
+      env: TGT_ARCH=arm64
+
+    - name: "Node Compile Iter 1 x64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
       env: TGT_ARCH=x64
-    - name: "Node Compile ia32"
-      <<: *_node_compile
-      env: TGT_ARCH=ia32
+    - name: "Node Compile Iter 2 x64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 2"
+      env: TGT_ARCH=x64
+    - name: "Node Compile Iter 3 x64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 3"
+      env: TGT_ARCH=x64
+    - name: "Node Release x64"
+      <<: *_node_release
+      env: TGT_ARCH=x64
 
 deploy:
   provider: releases

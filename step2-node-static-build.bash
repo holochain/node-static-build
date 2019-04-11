@@ -48,18 +48,29 @@ pxz -dc "${docker_img_file}" | docker load
 
 # -- execute docker script -- #
 
-docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/bash /work/node-static-build-script.bash
+log "execute docker build"
+if [ "x${CI_RUN_MIN}" == "x" ]; then
+  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/bash /work/node-static-build-script.bash
+else
+  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/bash -c "timeout ${CI_RUN_MIN}m /bin/bash /work/node-static-build-script.bash" || true
+fi
 
 # -- release the bits -- #
-cp "${node_src}/build-partly/usr/bin/node" "${node_bin_base}-partly-static"
-pxz "${node_bin_base}-partly-static"
-release "${node_bin_base}-partly-static.xz"
-cp "${node_src}/build-fully/usr/bin/node" "${node_bin_base}-fully-static"
-pxz "${node_bin_base}-fully-static"
-release "${node_bin_base}-fully-static.xz"
-cp -a "${node_src}/build-fully/usr/lib/node_modules/npm" .
-tar -I pxz -cf "${node_src}-${build_num}-npm.tar.xz" npm
-release "${node_src}-${build_num}-npm.tar.xz"
+
+if [ "x${CI_RUN_MIN}" == "x" ]; then
+  log "package release"
+  cp "${node_src}/build-partly/usr/bin/node" "${node_bin_base}-partly-static"
+  pxz "${node_bin_base}-partly-static"
+  release "${node_bin_base}-partly-static.xz"
+  cp "${node_src}/build-fully/usr/bin/node" "${node_bin_base}-fully-static"
+  pxz "${node_bin_base}-fully-static"
+  release "${node_bin_base}-fully-static.xz"
+  cp -a "${node_src}/build-fully/usr/lib/node_modules/npm" .
+  tar -I pxz -cf "${node_src}-${build_num}-npm.tar.xz" npm
+  release "${node_src}-${build_num}-npm.tar.xz"
+else
+  log "not releasing, CI_RUN_MIN was set: ${CI_RUN_MIN}m"
+fi
 
 # -- done -- #
 log "done"
