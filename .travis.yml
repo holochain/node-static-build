@@ -23,16 +23,16 @@ _node_compile: &_node_compile
 jobs:
   include:
     - name: "Docker Build x64"
-      << _docker_build
+      <<: *_docker_build
       env: TGT_ARCH=x64
     - name: "Docker Build ia32"
-      << _docker_build
+      <<: *_docker_build
       env: TGT_ARCH=ia32
     - name: "Node Compile x64"
-      << _node_compile
+      <<: *_node_compile
       env: TGT_ARCH=x64
     - name: "Node Compile ia32"
-      << _node_compile
+      <<: *_node_compile
       env: TGT_ARCH=ia32
 
 deploy:
