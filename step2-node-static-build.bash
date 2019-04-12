@@ -37,7 +37,7 @@ fi
 
 # -- write our exec script -- #
 
-cat > node-static-build-script.bash <<EOF
+cat > node-static-build-script.sh <<EOF
 cd /work
 cd "${node_src}"
 ./configure --prefix=/usr --enable-static --partly-static
@@ -58,10 +58,10 @@ pxz -dc "${docker_img_file}" | docker load
 log "execute docker build"
 if [ -z ${CI_RUN_MIN+x} ]; then
   log "running complete script"
-  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/bash /work/node-static-build-script.bash
+  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/sh /work/node-static-build-script.sh
 else
   log "running script with CI_RUN_MIN: ${CI_RUN_MIN-40}m"
-  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/bash -c "timeout ${CI_RUN_MIN-40}m /bin/bash /work/node-static-build-script.bash" || true
+  docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/sh -c "timeout ${CI_RUN_MIN-40}m /bin/sh /work/node-static-build-script.sh" || true
 fi
 
 # -- release the bits -- #

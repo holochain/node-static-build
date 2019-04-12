@@ -39,10 +39,9 @@ FROM ${docker_from}
 COPY ./qemu/usr/bin/${qemu_bin} /usr/bin/${qemu_bin}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  curl ca-certificates wget \
-  sudo vim htop bash pxz \
-  autoconf automake file make patch unzip libtool \
-  g++ gcc libbz2-dev zlib1g-dev python
+  autoconf automake make \
+  g++ gcc python && \
+  rm -rf /var/lib/apt/lists/*
 EOF
 
 docker build -t "${docker_img}" .
