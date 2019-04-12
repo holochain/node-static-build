@@ -26,12 +26,19 @@ dl_artifact "${docker_img_file}"
 # -- download node src -- #
 
 dl "${node_src_url}" "${node_src_file}" "${node_src_hash}"
+tar xf "${node_src_file}"
+
+if [[ -f touch_order.txt ]]; then
+  log "sorting file times to continue build"
+  while read fn; do
+    touch "${fn}"
+  done < touch_order.txt
+fi
 
 # -- write our exec script -- #
 
 cat > node-static-build-script.bash <<EOF
 cd /work
-tar xf "${node_src_file}"
 cd "${node_src}"
 ./configure --prefix=/usr --enable-static --partly-static
 make -j "\$(nproc)"
@@ -73,6 +80,8 @@ if [ -z ${CI_RUN_MIN+x} ]; then
 else
   log "not releasing, CI_RUN_MIN was set: ${CI_RUN_MIN-}m"
 fi
+
+find . -type f -printf "%T+\t%p\n" | sort | cut -f 2 > touch_order.txt
 
 # -- done -- #
 log "done"
