@@ -29,6 +29,19 @@ _node_release: &_node_release
   env: TGT_ARCH=x64
   script: "./step2-node-static-build.bash"
 
+stages:
+  - "Docker Build"
+  - "Node Compile 1"
+  - "Node Compile 2"
+  - "Node Compile 3"
+  - "Node Compile 4"
+  - "Node Compile 5"
+  - "Node Compile 6"
+  - "Node Compile 7"
+  - "Node Compile 8"
+  - "Node Compile 9"
+  - "Node Release"
+
 jobs:
   include:
     - name: "Docker Build x64"
