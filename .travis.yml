@@ -64,6 +64,22 @@ jobs:
       <<: *_node_compile_iter
       stage: "Node Compile 5"
       env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 6 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 7 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 8 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=armv7l
+    - name: "Node Compile Iter 9 armv7l"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=armv7l
     - name: "Node Release armv7l"
       <<: *_node_release
       env: TGT_ARCH=armv7l
@@ -85,6 +101,22 @@ jobs:
       stage: "Node Compile 4"
       env: TGT_ARCH=arm64
     - name: "Node Compile Iter 5 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 6 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 7 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 8 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 9 arm64"
       <<: *_node_compile_iter
       stage: "Node Compile 5"
       env: TGT_ARCH=arm64
