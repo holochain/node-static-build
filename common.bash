@@ -23,17 +23,6 @@ function dl() {
   echo "${__hash}  ${__file}" | sha256sum --check
 }
 
-function dl_artifact() {
-  local __file="${1}"
-  if [ ! -f "${__file}" ]; then
-    if [ "x${TRAVIS_TAG}" == "x" ]; then
-      log "ERROR, cannot download an artifact when not running on travis"
-      exit 1
-    fi
-    curl -L -O "https://github.com/holochain/node-static-build/releases/download/${TRAVIS_TAG}/${__file}"
-  fi
-}
-
 # -- resolve environment -- #
 
 this_arch="$(uname -m)"
@@ -60,15 +49,15 @@ qemu_bin=""
 docker_from=""
 
 case "${tgt_arch}" in
-  "x64")
-    qemu_bin="qemu-x86_64-static"
-    docker_from="amd64/debian:stretch-slim"
-    ;;
   "ia32")
     qemu_bin="qemu-i386-static"
     docker_from="i386/debian:stretch-slim"
     ;;
-  "armv7l")
+  "x64")
+    qemu_bin="qemu-x86_64-static"
+    docker_from="amd64/debian:stretch-slim"
+    ;;
+  "arm")
     qemu_bin="qemu-arm-static"
     docker_from="arm32v7/debian:stretch-slim"
     ;;
@@ -77,7 +66,7 @@ case "${tgt_arch}" in
     docker_from="arm64v8/debian:stretch-slim"
     ;;
   *)
-    log "ERROR, unsupported target arch ${tgt_arch}, supported targets: x64, ia32, armv7l, arm64"
+    log "ERROR, unsupported target arch ${tgt_arch}, supported targets: ia32, x64, arm, arm64"
     exit 1
     ;;
 esac

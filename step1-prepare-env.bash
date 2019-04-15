@@ -21,6 +21,7 @@ source ./common.bash
 
 # -- get more recent qemu-use-static binaries -- #
 
+log "download qemu-user-static"
 dl "${qemu_url}" "${qemu_file}" "${qemu_hash}"
 
 log "extract debian archive"
@@ -44,12 +45,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/*
 EOF
 
+log "build docker image"
 docker build -t "${docker_img}" .
 
 log "compressing docker image"
 docker save "${docker_img}" | pxz -zT 0 > "${docker_img_file}"
 
-release "${docker_img_file}"
+# -- write our exec script -- #
+
+cat > node-static-build-script.sh <<EOF
+cd /work
+cd "${node_src}"
+./configure --prefix=/usr --enable-static --partly-static
+EOF
+
+# -- execute docker script -- #
+
+log "execute docker build"
+docker run --rm -it -v "$(pwd):/work" -u "$(id -u ${USER}):$(id -g ${USER})" "${docker_img}" /bin/sh /work/node-static-build-script.sh
+
+# -- download node src -- #
+
+log "download nodejs source"
+dl "${node_src_url}" "${node_src_file}" "${node_src_hash}"
+tar xf "${node_src_file}"
 
 # -- done -- #
 log "done"
