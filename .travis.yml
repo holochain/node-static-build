@@ -1,24 +1,165 @@
-dist: trusty
+dist: xenial
 language: bash
 os: linux
 services: docker
-matrix:
-  include:
-  - name: linux-x64
-    env: VM_ARCH=x64
-  - name: linux-x86
-    env: VM_ARCH=x86
 if: tag IS present
-script: "VM_ARCH=${VM_ARCH} ./build.bash"
+
+addons:
+  apt:
+    packages:
+    - qemu-user-static
+    - pxz
+
+cache:
+  directories:
+    - build
+
+_docker_build: &_docker_build
+  stage: "Docker Build"
+  env: TGT_ARCH=x64
+  script: "./step1-prepare-env.bash"
+
+_node_compile_iter: &_node_compile_iter
+  stage: "Node Compile"
+  env: TGT_ARCH=x64
+  script: "./step2-build.bash"
+
+_node_release: &_node_release
+  stage: "Node Release"
+  env: TGT_ARCH=x64
+  script: "./step3-release.bash"
+
+stages:
+  - "Docker Build"
+  - "Node Compile 1"
+  - "Node Compile 2"
+  - "Node Compile 3"
+  - "Node Compile 4"
+  - "Node Compile 5"
+  - "Node Compile 6"
+  - "Node Compile 7"
+  - "Node Compile 8"
+  - "Node Compile 9"
+  - "Node Release"
+
+jobs:
+  include:
+    - name: "Docker Build ia32"
+      <<: *_docker_build
+      env: TGT_ARCH=ia32
+    - name: "Node Compile Iter 1 ia32"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=ia32
+    - name: "Node Release ia32"
+      <<: *_node_release
+      env: TGT_ARCH=ia32
+
+    - name: "Docker Build x64"
+      <<: *_docker_build
+      env: TGT_ARCH=x64
+    - name: "Node Compile Iter 1 x64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=x64
+    - name: "Node Release x64"
+      <<: *_node_release
+      env: TGT_ARCH=x64
+
+    - name: "Docker Build arm"
+      <<: *_docker_build
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 1 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 2 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 2"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 3 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 3"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 4 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 4"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 5 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 6 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 6"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 7 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 7"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 8 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 8"
+      env: TGT_ARCH=arm
+    - name: "Node Compile Iter 9 arm"
+      <<: *_node_compile_iter
+      stage: "Node Compile 9"
+      env: TGT_ARCH=arm
+    - name: "Node Release arm"
+      <<: *_node_release
+      env: TGT_ARCH=arm
+
+    - name: "Docker Build arm64"
+      <<: *_docker_build
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 1 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 1"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 2 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 2"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 3 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 3"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 4 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 4"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 5 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 5"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 6 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 6"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 7 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 7"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 8 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 8"
+      env: TGT_ARCH=arm64
+    - name: "Node Compile Iter 9 arm64"
+      <<: *_node_compile_iter
+      stage: "Node Compile 9"
+      env: TGT_ARCH=arm64
+    - name: "Node Release arm64"
+      <<: *_node_release
+      env: TGT_ARCH=arm64
+
 deploy:
   provider: releases
   api_key:
     secure: f2eIgNLXBbMXwNP6lpjbEn4sXYj5wDmOQyKwriEyaBARwxXsGgqb12zGnz2FGa6692dkR+QcR/NAmISCWNOAyR90gdiNESMWYbjSeyuAMHwD31yy2kLvzvt21VxknPtZarEu51tYFsRF4MVpCLj/REJ1ZDSahfQRg3RPohpxj/H5L6dIwCimg7LbhIqOLcyHuDq3ialBmDbD0I6J4O9xmfvXWGxOmn8wlp0Zu6KK/3EL2ouKSK264c2dPfHs2mR3l1L05i+qq0yXjEIvnqnozQoORwffZgBBcXJyptb0IPx2y1DnQytR9ztc+P4dob+QTNFEZn24jLKWCp8YnzJfLkOUSQpD1ZGgWl/hOa3TILjDXh6rJRGxnEeRhEQK5y8fc+fYe0YNz8kN/5AtfF/G3VYDQipR2+1RFDERBe0Qk5d9JNf2gVMnQ+lYRZzgCUMmNph8SN4CiMmM7uMavhR6Q6mCDZACqU5Wjss+WTRs7lNXanCDyW+ZO+uRGkxFkIkWHkI2L64YalDweO8AiDdUUFUXZnNpw+DjZzflOgAY/xt+NzVpAWn51XdWHfUtKSRkfsh9iPqC6ttQuM7/iXCmPMp9N/qFKDir3U4cYr4+QAlMDvOUd5KQrYXWSS4MWNqBIoQnwMR8nkckyGKfHKGBcbdrkOclQ9HutHZ2chAKsbY=
   file_glob: true
   file:
-  - dist/build-*/output/*
+  - build/build-*/output/*
   skip_cleanup: true
-  draft: true
   prerelease: true
   name: "$TRAVIS_TAG"
   on:
